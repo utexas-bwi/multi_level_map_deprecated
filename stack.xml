@@ -6,5 +6,7 @@
   <url>http://ros.org/wiki/multi_level_map</url>
 
   <depend stack="ros_comm" /> <!-- rospy -->
+  <depend stack="tf" /> <!-- tf -->
+  <depend stack="common_msgs" /> <!-- nav_msgs,geometry_msgs -->
 
 </stack>

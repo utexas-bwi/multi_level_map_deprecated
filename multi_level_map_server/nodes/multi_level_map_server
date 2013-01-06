@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import roslib; roslib.load_manifest('bwi_apps')
+import roslib; roslib.load_manifest('multi_level_map_server')
 import rospy
 
 import yaml, os
@@ -12,15 +12,15 @@ from nav_msgs.srv import GetMap
 from nav_msgs.srv import GetMapResponse
 from nav_msgs.msg import OccupancyGrid
 from nav_msgs.msg import MapMetaData
-from bwi_msgs.msg import LevelMetaData
-from bwi_msgs.msg import MultiLevelMapLink
-from bwi_msgs.msg import MultiLevelMapData
-import bwi_utils.utils
-utils = bwi_utils.utils
+from multi_level_map_msgs.msg import LevelMetaData
+from multi_level_map_msgs.msg import MultiLevelMapLink
+from multi_level_map_msgs.msg import MultiLevelMapData
+import multi_level_map_utils.utils
+utils = multi_level_map_utils.utils
 
 class MapServer:
   def __init__(self):
-    rospy.init_node('bwi_map_server')
+    rospy.init_node('multi_level_map_server')
 
     #get parameters
     self.global_frame_id = rospy.get_param('~global_frame_id', '/map')

@@ -1,13 +1,13 @@
 <package>
-  <description brief="bwi_msgs">
+  <description brief="multi_level_map_msgs">
 
-     bwi_msgs
+     multi_level_map_msgs
 
   </description>
   <author>Piyush Khandelwal</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/bwi_msgs</url>
+  <url>http://ros.org/wiki/multi_level_map_msgs</url>
 
   <depend package="geometry_msgs" />
   <depend package="nav_msgs" />
