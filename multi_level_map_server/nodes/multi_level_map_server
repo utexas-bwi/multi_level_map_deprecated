@@ -49,7 +49,6 @@ class MapServer:
 
     for map_name, map_info in self.map_list.items():
 
-      yaml_file = map_info['yaml'];
       origin = map_info['origin'];
       if len(origin) == 3:
         self.map_origin_position[map_name] = (origin[0], origin[1], 0)
@@ -62,6 +61,18 @@ class MapServer:
         self.map_origin_orientation[map_name] = (origin[3], origin[4], origin[5], origin[6])
       else:
         raise TypeError("Unable to parse origin tag")
+
+      yaml_file = map_info['yaml'];
+      # check if yaml file is package relative (or absolute)
+      if yaml_file.startswith('package://'):
+        rest = yaml_file[10:]
+        package_name = rest[:rest.find('/')]
+        package_relative_file = rest[rest.find('/')+1:]
+        if package_name == rest:
+          rospy.logfatal("Unable to parse yaml file location %s" %yaml_file)
+          return
+        package_path = roslib.packages.get_pkg_dir(package_name, required=True)
+        yaml_file = package_path + '/' + package_relative_file
 
       try:
         map_info = yaml.load(open(yaml_file, 'r'))
