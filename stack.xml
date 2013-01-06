@@ -1,0 +1,10 @@
+<stack>
+  <description brief="multi_level_map">multi_level_map</description>
+  <author>Maintained by Piyush Khandelwal</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/multi_level_map</url>
+
+  <depend stack="ros_comm" /> <!-- rospy -->
+
+</stack>
