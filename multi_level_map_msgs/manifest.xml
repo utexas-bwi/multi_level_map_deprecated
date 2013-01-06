@@ -1,0 +1,17 @@
+<package>
+  <description brief="bwi_msgs">
+
+     bwi_msgs
+
+  </description>
+  <author>Piyush Khandelwal</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/bwi_msgs</url>
+
+  <depend package="geometry_msgs" />
+  <depend package="nav_msgs" />
+
+</package>
+
+

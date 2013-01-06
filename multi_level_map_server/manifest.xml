@@ -1,0 +1,14 @@
+<package>
+  <description brief="bwi_map_server">
+
+     bwi_map_server
+
+  </description>
+  <author>Piyush Khandelwal</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/bwi_map_server</url>
+  <depend package="bwi_utils"/>
+</package>
+
+
