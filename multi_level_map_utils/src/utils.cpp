@@ -1,9 +1,9 @@
-#include "utils.h"
+#include <multi_level_map_utils/utils.h>
 
-namespace bwi_utils {
+namespace multi_level_map {
 
   std::string frameIdFromLevelId(std::string level_id) {
-    assert (level_id.find('/') == -1);
+    assert (level_id.find('/') == std::string::npos);
     return "/" + level_id + "/map";
   }
 

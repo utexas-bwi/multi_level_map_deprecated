@@ -1,13 +1,13 @@
 <package>
-  <description brief="bwi_utils">
+  <description brief="multi_level_map_utils">
 
-     bwi_utils
+     multi_level_map_utils
 
   </description>
   <author>Jake</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/bwi_utils</url>
+  <url>http://ros.org/wiki/multi_level_map_utils</url>
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lutils"/>
   </export>
