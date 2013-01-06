@@ -1,8 +1,8 @@
 demo1:
-  yaml: package://bwi_map_server/maps/demo1.yaml
+  yaml: package://multi_level_map_server/maps/demo1.yaml
   origin: [0, 0, 0, 0, 0, 0]
 demo2:
-  yaml: package://bwi_map_server/maps/demo2.yaml
+  yaml: package://multi_level_map_server/maps/demo2.yaml
   origin: [18, 0, 0, 0, 0, 0]
 links:
   - from_point:
