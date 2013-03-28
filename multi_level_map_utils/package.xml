@@ -11,8 +11,6 @@
   <author>Piyush Khandelwal</author>
   <author>Jake Menashe</author>
 
-  <export>
-    <cpp lflags="-L${prefix}/lib -lutils" cflags="-I${prefix}/include"/>
-  </export>
+  <buildtool_depend>catkin</buildtool_depend>
 
 </package>
