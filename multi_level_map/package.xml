@@ -1,0 +1,27 @@
+<package>
+  <name>multi_level_map</name>
+  <version>0.0.1</version>
+  <description>multi_level_map</description>
+  <!-- <maintainer>Maintained by Piyush Khandelwal</maintainer> -->
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/multi_level_map</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <maintainer email="piyushk@gmail.com">Piyush Khandelwal</maintainer>
+  <author>Piyush Khandelwal</author>
+
+
+  <!-- <run_depend>multi_level_map_server</run_depend> -->
+  <run_depend>multi_level_map_msgs</run_depend>
+  <!-- <run_depend>multi_level_map_utils</run_depend> -->
+
+
+
+
+
+  <export>
+    <metapackage/>
+  </export>
+</package>

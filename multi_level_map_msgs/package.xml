@@ -1,0 +1,28 @@
+<package>
+  <name>multi_level_map_msgs</name>
+  <version>0.0.1</version>
+  <description>multi_level_map_msgs</description>
+  <!-- <maintainer>Piyush Khandelwal</maintainer> -->
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/multi_level_map_msgs</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Piyush Khandelwal</author>
+  <maintainer email="piyushk@gmail.com">Piyush Khandelwal</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>message_generation</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+
+  <run_depend>message_runtime</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+
+  <export>
+
+  </export>
+</package>

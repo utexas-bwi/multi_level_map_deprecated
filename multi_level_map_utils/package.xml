@@ -1,0 +1,18 @@
+<package>
+  <name>multi_level_map_utils</name>
+  <version>0.0.1</version>
+  <description>multi_level_map_utils</description>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/multi_level_map_utils</url>
+
+  <maintainer email="piyushk@gmail.com">Piyush Khandelwal</maintainer>
+  <author>Piyush Khandelwal</author>
+  <author>Jake Menashe</author>
+
+  <export>
+    <cpp lflags="-L${prefix}/lib -lutils" cflags="-I${prefix}/include"/>
+  </export>
+
+</package>
