@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import roslib; roslib.load_manifest('multi_level_map_server')
+import roslib
 import rospy
 
 import yaml, os

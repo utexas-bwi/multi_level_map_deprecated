@@ -2,9 +2,6 @@
   <name>multi_level_map_server</name>
   <version>0.0.1</version>
   <description>multi_level_map_server</description>
-  <!-- <maintainer>Piyush Khandelwal</maintainer> -->
-  <!-- <maintainer>Jake Menashe</maintainer> -->
-
   <license>BSD</license>
 
   <url type="website">http://ros.org/wiki/multi_level_map_server</url>
@@ -16,13 +13,11 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <run_depend>multi_level_map_msgs</run_depend>
+  <run_depend>multi_level_map_utils</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>roslib</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>tf</run_depend>
-  <run_depend>nav_msgs</run_depend>
-  <run_depend>multi_level_map_utils</run_depend>
-  <run_depend>multi_level_map_msgs</run_depend>
 
-  <export>
-
-  </export>
 </package>
