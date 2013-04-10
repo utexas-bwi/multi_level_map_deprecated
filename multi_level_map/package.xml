@@ -10,6 +10,8 @@
   <maintainer email="piyushk@gmail.com">Piyush Khandelwal</maintainer>
   <author>Piyush Khandelwal</author>
 
+  <buildtool_depend>catkin</buildtool_depend>
+
   <run_depend>multi_level_map_msgs</run_depend>
   <run_depend>multi_level_map_server</run_depend>
   <run_depend>multi_level_map_utils</run_depend>
