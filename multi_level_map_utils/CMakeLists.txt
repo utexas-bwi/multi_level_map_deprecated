@@ -2,6 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(multi_level_map_utils)
 find_package(catkin REQUIRED)
+find_package(Boost REQUIRED)
 
 #common commands for building c++ executables and libraries
 #add_library(${PROJECT_NAME} src/example.cpp)

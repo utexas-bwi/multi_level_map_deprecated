@@ -13,4 +13,6 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>boost</build_depend>
+
 </package>
