@@ -3,3 +3,6 @@ build
 lib
 msg_gen
 srv_gen
+*.pyc
+*.swp
+*.swo
