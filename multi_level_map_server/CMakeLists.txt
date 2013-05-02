@@ -9,7 +9,6 @@ catkin_package(
     nav_msgs
     multi_level_map_msgs
     multi_level_map_utils
-    roslib
     rospy
     tf
 )

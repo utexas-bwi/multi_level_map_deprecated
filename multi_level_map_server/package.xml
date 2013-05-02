@@ -17,7 +17,7 @@
   <run_depend>multi_level_map_msgs</run_depend>
   <run_depend>multi_level_map_utils</run_depend>
   <run_depend>nav_msgs</run_depend>
-  <run_depend>roslib</run_depend>
+  <run_depend>python-rospkg</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>tf</run_depend>
 
