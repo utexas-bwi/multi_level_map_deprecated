@@ -1,0 +1,5 @@
+string new_level_id
+geometry_msgs/PoseWithCovarianceStamped pose_in_new_level
+---
+bool success
+string error_message

@@ -1,2 +1,3 @@
 string level_id
+string logical_data_directory
 nav_msgs/MapMetaData info
