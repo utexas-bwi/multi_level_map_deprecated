@@ -84,9 +84,8 @@ class LevelSelectorPlugin(Plugin):
         source = self.sender()
 
         if source.text() == self.current_level:
-            pass
-
-        # source.setChecked(False)
+            source.setChecked(True)
+            return
 
         # Construct an origin pose. The level selector cannot be used to choose the initialpose in the new 
         origin_pose = PoseWithCovarianceStamped()
