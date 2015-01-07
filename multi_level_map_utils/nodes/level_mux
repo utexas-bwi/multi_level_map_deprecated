@@ -3,6 +3,7 @@
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from multi_level_map_msgs.msg import LevelMetaData, MultiLevelMapData
 from multi_level_map_msgs.srv import ChangeCurrentLevel
+import multi_level_map_utils.utils as utils
 from nav_msgs.msg import MapMetaData, OccupancyGrid
 from nav_msgs.srv import GetMap
 import rospy
@@ -77,9 +78,9 @@ class LevelMultiplexer:
                     self.initialpose_publisher = rospy.Publisher("initialpose", PoseWithCovarianceStamped) 
 
                 # Publish everything!
-                # TODO construct the topic names using util functions.
-                self.level_publisher.publish(self.get_single_message(level.level_id + "/map", OccupancyGrid))
-                self.level_metadata_publisher.publish(self.get_single_message(level.level_id + "/map_metadata",
+                self.level_publisher.publish(self.get_single_message(utils.mapTopicFromLevelId(level.level_id),
+                                                                     OccupancyGrid))
+                self.level_metadata_publisher.publish(self.get_single_message(utils.metadataTopicFromLevelId(level.level_id),
                                                                               MapMetaData))
                 self.initialpose_publisher.publish(req.initial_pose)
                 self.status_publisher.publish(level)
@@ -96,7 +97,7 @@ class LevelMultiplexer:
         return success, error_message
 
     def process_level_service(self, req):
-        level_service_proxy = rospy.ServiceProxy(self.current_level + '/static_map', GetMap)
+        level_service_proxy = rospy.ServiceProxy(utils.mapServiceFromLevelId(self.current_level), GetMap)
         return level_service_proxy()
 
 if __name__ == '__main__':
