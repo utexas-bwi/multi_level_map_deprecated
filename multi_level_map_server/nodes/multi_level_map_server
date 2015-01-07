@@ -49,6 +49,8 @@ class MapServer:
 
     for map_name, map_info in self.map_list.items():
 
+      data_directory = map_info['data_directory']
+
       origin = map_info['origin'];
       if len(origin) == 3:
         self.map_origin_position[map_name] = (origin[0], origin[1], 0)
@@ -115,6 +117,7 @@ class MapServer:
 
       leveldata = LevelMetaData()
       leveldata.level_id = map_name
+      leveldata.data_directory = data_directory
       leveldata.info = self.map_response[map_name].map.info
       out_meta_data_msg.levels.append(leveldata)
 

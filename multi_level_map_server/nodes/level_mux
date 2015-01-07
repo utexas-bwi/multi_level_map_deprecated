@@ -1,0 +1,104 @@
+#!/usr/bin/env python
+
+from geometry_msgs.msg import PoseWithCovarianceStamped
+from multi_level_map_msgs.msg import LevelMetaData, MultiLevelMapData
+from multi_level_map_msgs.srv import ChangeCurrentLevel
+from nav_msgs.msg import MapMetaData, OccupancyGrid
+from nav_msgs.srv import GetMap
+import rospy
+
+class LevelMultiplexer:
+
+    def __init__(self):
+
+        rospy.init_node("map_mux")
+
+        # Subcribe to the multi level map data to get information about all the maps.
+        self.multimap_subscriber = rospy.Subscriber("map1", MultiLevelMapData, self.process_multimap)
+        self.multimap_available = False
+        self.levels = []
+
+        # We also need to publish information about the current level.
+        self.current_level = None
+        self.status_publisher = rospy.Publisher("~current_level", LevelMetaData, latch=True)
+
+        # Based on the current level id, publish map, static_map, map_metadata and initial_pose (i.e. the mux output).
+        self.level_publisher = None
+        self.level_metadata_publisher = None
+        self.level_map_service = None
+        self.initialpose_publisher = None
+
+        # Finally, provide a service that allows the current level to be changed.
+        # This service will get enabled once the multimap becomes available.
+        self.change_level_service = None
+
+    def process_multimap(self, msg):
+        self.multimap_available = True
+        self.levels = msg.levels
+        if self.change_level_service is None:
+            self.change_level_service = rospy.Service('~change_current_level', ChangeCurrentLevel, self.change_level)
+
+    def get_single_message(self, topic, Msg):
+        self.single_message = None
+        temp_subscriber = rospy.Subscriber(topic, Msg, self.process_single_message)
+        r = rospy.Rate(100)
+        while not rospy.is_shutdown() and self.single_message is None:
+            temp_subscriber.unregister()
+            if self.single_message is None:
+                # We are shutting down the node, just return an empty message.
+                return Msg()
+            return self.single_message
+
+    def process_single_message(self, msg): 
+        self.single_meesage = msg
+
+    def change_level(self, req):
+        success = True
+        error_message = ""
+
+        level_found = False
+        available_level_names = []
+
+        for level in self.levels:
+            if level.level_id == req.new_level_id:
+
+                # Make this the current level
+                self.current_level = level.level_id
+
+                # Initialize the mux output channels if they have not been initialized.
+                if self.level_publisher is None:
+                    self.level_publisher = rospy.Publisher("~map", OccupancyGrid, latch=True)
+                    self.level_metadata_publisher = rospy.Publisher("~map_metadata", MapMetaData, latch=True)
+                    self.level_map_service = rospy.Service('~static_map', GetMap, self.process_level_service)
+                    # Note that initialpose is not latched, as the publication is only valid when the 
+                    # change_current_level service is called. Soon after, the robot may have moved, and this estimate
+                    # is incorrect.
+                    self.initialpose_publisher = rospy.Publisher("initialpose", PoseWithCovarianceStamped) 
+
+                # Publish everything!
+                self.level_publisher.publish(self.get_single_message(level.level_id + "/map", OccupancyGrid))
+                self.level_metadata_publisher.publish(self.get_single_message(level.level_id + "/map_metadata",
+                                                                              MapMetaData))
+                self.initialpose_publisher.publish(req.initial_pose)
+
+                level_found = True
+                break
+            else:
+                available_level_names.append(level.level_id)
+
+        if not level_found:
+            success = False
+            error_message = "Level " + req.new_level_id + " not found in available levels " + str(available_level_names)
+
+        return success, error_message
+
+    def process_level_service(self, req):
+        level_service_proxy = rospy.ServiceProxy(self.current_level + '/static_map', GetMap)
+        return level_service_proxy()
+
+if __name__ == '__main__':
+    level_mux = LevelMultiplexer
+    try:
+        rospy.spin()
+    except rospy.ROSInterruptException: 
+        pass

@@ -7,7 +7,7 @@ find_package(catkin REQUIRED COMPONENTS message_generation geometry_msgs nav_msg
 #uncomment if you have defined messages
 add_message_files(
   DIRECTORY msg
-  FILES CurrentLevelStatus.msg LevelMetaData.msg  MultiLevelMapData.msg  MultiLevelMapLink.msg  MultiLevelMapPoint.msg
+  FILES LevelMetaData.msg  MultiLevelMapData.msg  MultiLevelMapLink.msg  MultiLevelMapPoint.msg
 )
 
 add_service_files(
