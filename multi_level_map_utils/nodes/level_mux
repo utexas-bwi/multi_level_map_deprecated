@@ -14,7 +14,7 @@ class LevelMultiplexer:
         rospy.init_node("map_mux")
 
         # Subcribe to the multi level map data to get information about all the maps.
-        self.multimap_subscriber = rospy.Subscriber("map1", MultiLevelMapData, self.process_multimap)
+        self.multimap_subscriber = rospy.Subscriber("map_metadata", MultiLevelMapData, self.process_multimap)
         self.multimap_available = False
         self.levels = []
 
@@ -43,14 +43,15 @@ class LevelMultiplexer:
         temp_subscriber = rospy.Subscriber(topic, Msg, self.process_single_message)
         r = rospy.Rate(100)
         while not rospy.is_shutdown() and self.single_message is None:
-            temp_subscriber.unregister()
-            if self.single_message is None:
-                # We are shutting down the node, just return an empty message.
-                return Msg()
-            return self.single_message
+            r.sleep()
+        temp_subscriber.unregister()
+        if self.single_message is None:
+            # We are shutting down the node, just return an empty message.
+            return Msg()
+        return self.single_message
 
     def process_single_message(self, msg): 
-        self.single_meesage = msg
+        self.single_message = msg
 
     def change_level(self, req):
         success = True
@@ -80,6 +81,7 @@ class LevelMultiplexer:
                 self.level_metadata_publisher.publish(self.get_single_message(level.level_id + "/map_metadata",
                                                                               MapMetaData))
                 self.initialpose_publisher.publish(req.initial_pose)
+                self.status_publisher.publish(level)
 
                 level_found = True
                 break
@@ -97,7 +99,7 @@ class LevelMultiplexer:
         return level_service_proxy()
 
 if __name__ == '__main__':
-    level_mux = LevelMultiplexer
+    level_mux = LevelMultiplexer()
     try:
         rospy.spin()
     except rospy.ROSInterruptException: 
