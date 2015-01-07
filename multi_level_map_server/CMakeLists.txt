@@ -20,6 +20,8 @@ install(
 install(
   DIRECTORY maps DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-install(
-  DIRECTORY nodes/ DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+
+catkin_install_python(
+  PROGRAMS nodes/multi_level_map_server
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

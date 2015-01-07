@@ -1,0 +1,11 @@
+<launch>
+
+  <!-- Start the example multi map server -->
+  <include file="$(find multi_level_map_server)/launch/example.launch" />
+
+  <!-- Start the level mux -->
+  <node name="level_mux" pkg="multi_level_map_utils" type="level_mux" />
+
+  <!-- TODO Start the floor selector UI -->
+
+</launch>
