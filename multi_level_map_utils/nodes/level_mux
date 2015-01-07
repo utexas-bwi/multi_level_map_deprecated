@@ -77,6 +77,7 @@ class LevelMultiplexer:
                     self.initialpose_publisher = rospy.Publisher("initialpose", PoseWithCovarianceStamped) 
 
                 # Publish everything!
+                # TODO construct the topic names using util functions.
                 self.level_publisher.publish(self.get_single_message(level.level_id + "/map", OccupancyGrid))
                 self.level_metadata_publisher.publish(self.get_single_message(level.level_id + "/map_metadata",
                                                                               MapMetaData))

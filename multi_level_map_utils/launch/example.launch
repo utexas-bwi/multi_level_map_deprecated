@@ -6,6 +6,7 @@
   <!-- Start the level mux -->
   <node name="level_mux" pkg="multi_level_map_utils" type="level_mux" />
 
-  <!-- TODO Start the floor selector UI -->
+  <!-- Start the level selector -->
+  <node name="level_selector" pkg="multi_level_map_utils" type="level_selector" />
 
 </launch>
