@@ -98,15 +98,14 @@ class MapServer:
       self.map_response[map_name].map.header.stamp = rospy.Time.now()
 
       # Publish map service
-      self.service_server[map_name] = rospy.Service(map_name + '/static_map', 
-          GetMap, self.levelCallback)
+      self.service_server[map_name] = rospy.Service(utils.mapServiceFromLevelId(map_name), GetMap, self.levelCallback)
 
       # Publish latched map messages
-      self.metadata_publisher[map_name] = rospy.Publisher(map_name + '/map_metadata',
-          MapMetaData, latch=True)
+      self.metadata_publisher[map_name] = rospy.Publisher(utils.metadataTopicFromLevelId(map_name), 
+                                                          MapMetaData,
+                                                          latch=True)
       self.metadata_publisher[map_name].publish(self.map_response[map_name].map.info)
-      self.map_publisher[map_name] = rospy.Publisher(map_name + '/map',
-          OccupancyGrid, latch=True)
+      self.map_publisher[map_name] = rospy.Publisher(utils.mapTopicFromLevelId(map_name), OccupancyGrid, latch=True)
       self.map_publisher[map_name].publish(self.map_response[map_name].map)
 
       leveldata = LevelMetaData()

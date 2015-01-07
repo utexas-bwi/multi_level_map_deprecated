@@ -13,8 +13,11 @@ def frameIdFromLevelId(level_id):
 def mapTopicFromLevelId(level_id):
   return construct(level_id,'map')
 
-def metadataTopicFromLevelLevelId(level_id):
+def metadataTopicFromLevelId(level_id):
   return construct(level_id,'map_metadata')
+
+def mapServiceFromLevelId(level_id):
+  return construct(level_id,'static_map')
 
 def levelIdFromLevelFrameId(frame_id):
   components = frame_id.split('/')
