@@ -4,12 +4,11 @@ import rospy
 import rospkg
 
 import yaml, os
-from PIL import Image
 
+from bwi_tools import loadMapFromFile
 from tf.transformations import quaternion_from_euler
 from tf import TransformBroadcaster
 from nav_msgs.srv import GetMap
-from nav_msgs.srv import GetMapResponse
 from nav_msgs.msg import OccupancyGrid
 from nav_msgs.msg import MapMetaData
 from multi_level_map_msgs.msg import LevelMetaData
@@ -34,7 +33,7 @@ class MapServer:
     try:
       self.map_links = rospy.get_param('~links')
     except:
-      rospy.logwarn("No links provided between different map levels (~links). Planning from one level to another will fail")
+      # Haven't gotten the concept of links perfect yet, so don't print a warning here.
       self.map_links = list()
 
     # process maps
@@ -74,25 +73,11 @@ class MapServer:
 
       yaml_file = resolved_yaml_file
 
-      try:
-        map_info = yaml.load(open(yaml_file, 'r'))
-      except:
+      self.map_response[map_name] = loadMapFromFile(yaml_file)
+      if self.map_response[map_name] is None:
         rospy.logfatal("Unable to load yaml file for map: %s" %yaml_file)
         return
 
-      resolution = map_info.get('resolution')
-      origin = map_info.get('origin')
-      negate = map_info.get('negate')
-      occupied_thresh = map_info.get('occupied_thresh')
-      free_thresh = map_info.get('free_thresh')
-
-      image_file = map_info.get('image')
-      if image_file[0] != '/': 
-        yaml_file_dir = os.path.dirname(os.path.realpath(yaml_file))
-        image_file = yaml_file_dir + '/' + image_file
-
-      self.map_response[map_name] = self.loadMapFromFile(image_file, resolution,
-          negate, occupied_thresh, free_thresh, origin)
       self.map_response[map_name].map.info.map_load_time = rospy.Time.now()
       self.map_response[map_name].map.header.frame_id = utils.frameIdFromLevelId(map_name)
       self.map_response[map_name].map.header.stamp = rospy.Time.now()
@@ -175,62 +160,6 @@ class MapServer:
     for map_name, map_response in self.map_response.items():
       if service == rospy.resolve_name(map_name + '/static_map'):
         return map_response
-
-  def loadMapFromFile(self, image_file, resolution, negate, occupied_thresh,
-      free_thresh, origin):
-
-    resp = GetMapResponse()
-
-    image = Image.open(image_file)
-    pix = image.load()
-
-    image_size = image.size
-    resp.map.info.width = image_size[0]
-    resp.map.info.height = image_size[1]
-    resp.map.info.resolution = resolution
-
-    resp.map.info.origin.position.x = origin[0]
-    resp.map.info.origin.position.y = origin[1]
-    resp.map.info.origin.position.z = 0
-    q = quaternion_from_euler(0,0,origin[2])
-    resp.map.info.origin.orientation.x = q[0]
-    resp.map.info.origin.orientation.y = q[1]
-    resp.map.info.origin.orientation.z = q[2]
-    resp.map.info.origin.orientation.w = q[3]
-
-    test_pxl = pix[0,0]
-    if isinstance(test_pxl, (list, tuple)):
-      is_multi_layer = True
-      num_layers = len(test_pxl)
-    else:
-      is_multi_layer = False
-      num_layers = 1
-
-    resp.map.data = [None] * image_size[0] * image_size[1]
-    for j in range(image_size[1]):
-      for i in range(image_size[0]):
-
-        pxl = pix[i, j]
-
-        if is_multi_layer:
-          color_average = sum(pxl) / num_layers
-        else:
-          color_average = pxl
-
-        if negate:
-          occ = color_average / 255.0;
-        else:
-          occ = (255 - color_average) / 255.0;
-
-        map_idx = resp.map.info.width * (resp.map.info.height - j - 1) + i; 
-        if (occ > occupied_thresh):
-          resp.map.data[map_idx] = 100
-        elif (occ < free_thresh):
-          resp.map.data[map_idx] = 0
-        else:
-          resp.map.data[map_idx] = -1
-
-    return resp
 
 if __name__ == '__main__':
   MapServer()

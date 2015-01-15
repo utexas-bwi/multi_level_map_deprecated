@@ -82,7 +82,7 @@ class LevelSelectorPlugin(Plugin):
             self.current_level = None
         self._widget.emit(SIGNAL("update_button_status"))
 
-    def handle_button(self, index):
+    def handle_button(self):
         source = self.sender()
 
         if source.text() == self.current_level:
