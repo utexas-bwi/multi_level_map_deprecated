@@ -162,4 +162,7 @@ class MapServer:
         return map_response
 
 if __name__ == '__main__':
-  MapServer()
+  try:
+    MapServer()
+  except rospy.exceptions.ROSInterruptException:
+    pass
