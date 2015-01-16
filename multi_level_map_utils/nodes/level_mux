@@ -7,6 +7,7 @@ import multi_level_map_utils.utils as utils
 from nav_msgs.msg import MapMetaData, OccupancyGrid
 from nav_msgs.srv import GetMap
 import rospy
+from std_srvs.srv import Empty
 import tf
 
 class LevelMultiplexer:
@@ -110,6 +111,16 @@ class LevelMultiplexer:
                     # change_current_level service is called. Soon after, the robot may have moved, and this estimate
                     # is incorrect.
                     self.initialpose_publisher = rospy.Publisher("initialpose", PoseWithCovarianceStamped) 
+                    try:
+                        clear_costmap_service = rospy.ServiceProxy('move_base/clear_costmaps', Empty)
+                        # Clear all ze costmaps.
+                        clear_costmap_service()
+                    except rospy.ROSInterruptException:
+                        # shutting down.
+                        return False, "Shutting down!"
+                    except rospy.ServiceException:
+                        # Service does not exist, level_mux being used without move_base OR a configuration snafu
+                        rospy.logwarn("Couldn't find move_base clear costmap service. This is an error if navigation is running!")
 
                 # Publish everything!
                 self.level_publisher.publish(self.get_single_message(utils.mapTopicFromLevelId(level.level_id),
