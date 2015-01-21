@@ -79,12 +79,14 @@ class LevelMultiplexer:
     def get_single_message(self, topic, Msg):
         self.single_message = None
         temp_subscriber = rospy.Subscriber(topic, Msg, self.process_single_message)
-        r = rospy.Rate(100)
-        while not rospy.is_shutdown() and self.single_message is None:
+        r = rospy.Rate(10)
+        counter = 1
+        while not rospy.is_shutdown() and self.single_message is None and counter < 100:
             r.sleep()
+            counter += 1
         temp_subscriber.unregister()
         if self.single_message is None:
-            # We are shutting down the node, just return an empty message.
+            rospy.logfatal("Couldn't retrieve single message topic from " + topic)
             return Msg()
         return self.single_message
 
