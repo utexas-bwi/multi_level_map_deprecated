@@ -16,6 +16,8 @@ class LevelMultiplexer:
 
         rospy.init_node("map_mux")
 
+        self.global_frame_id = rospy.get_param('~global_frame_id', 'level_mux/map')
+
         # Subcribe to the multi level map data to get information about all the maps.
         self.multimap_subscriber = rospy.Subscriber("map_metadata", MultiLevelMapData, self.process_multimap)
         self.multimap_available = False
@@ -154,7 +156,7 @@ class LevelMultiplexer:
                 br.sendTransform((0, 0, 0),
                                  tf.transformations.quaternion_from_euler(0, 0, 0),
                                  rospy.Time.now(),
-                                 'level_mux/map',
+                                 self.global_frame_id,
                                  utils.frameIdFromLevelId(self.current_level))
             r.sleep()
 
