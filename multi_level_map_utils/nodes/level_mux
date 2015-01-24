@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from bwi_tools import loadMapFromFile
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from multi_level_map_msgs.msg import LevelMetaData, MultiLevelMapData
 from multi_level_map_msgs.srv import ChangeCurrentLevel, ChangeCurrentLevelRequest
@@ -21,7 +22,11 @@ class LevelMultiplexer:
         # Subcribe to the multi level map data to get information about all the maps.
         self.multimap_subscriber = rospy.Subscriber("map_metadata", MultiLevelMapData, self.process_multimap)
         self.multimap_available = False
-        self.levels = []
+        multimap_topic_name = rospy.resolve_name("map_metadata")
+        if '/' in multimap_topic_name:
+            self.multimap_topic_prefix = multimap_topic_name[0:multimap_topic_name.rfind('/') + 1]
+        else:
+            self.multimap_topic_prefix = ""
 
         # We also need to publish information about the current level.
         self.current_level = None
@@ -40,12 +45,21 @@ class LevelMultiplexer:
     def process_multimap(self, msg):
 
         # Get information about all the levels.
-        self.multimap_available = True
         self.levels = msg.levels
+        self.maps = {}
+        for level in self.levels:
+            self.maps[level.level_id] = loadMapFromFile(level.map_file)
+            if self.maps[level.level_id] is None:
+                rospy.logfatal("Unable to load yaml file for map: %s" %level.map_file)
+                #TODO raise exception
+            self.maps[level.level_id].map.info.map_load_time = rospy.Time.now()
+            self.maps[level.level_id].map.header.frame_id = utils.frameIdFromLevelId(level.level_id)
 
         # If the service to change the level hasn't been advertised, then advertise it now.
         if self.change_level_service is None:
             self.change_level_service = rospy.Service('~change_current_level', ChangeCurrentLevel, self.change_level)
+
+        self.multimap_available = True
 
         # Perform some sanity checks on the current_level
         if len(self.levels) == 1:
@@ -75,23 +89,6 @@ class LevelMultiplexer:
                     self.initialpose_publisher.unregister()
                     self.initialpose_publisher = None
                 self.current_level = None
-
-    def get_single_message(self, topic, Msg):
-        self.single_message = None
-        temp_subscriber = rospy.Subscriber(topic, Msg, self.process_single_message)
-        r = rospy.Rate(10)
-        counter = 1
-        while not rospy.is_shutdown() and self.single_message is None and counter < 100:
-            r.sleep()
-            counter += 1
-        temp_subscriber.unregister()
-        if self.single_message is None:
-            rospy.logfatal("Couldn't retrieve single message topic from " + topic)
-            return Msg()
-        return self.single_message
-
-    def process_single_message(self, msg): 
-        self.single_message = msg
 
     def change_level(self, req):
         success = True
@@ -126,11 +123,12 @@ class LevelMultiplexer:
                         # Service does not exist, level_mux being used without move_base OR a configuration snafu
                         rospy.logwarn("Couldn't find move_base clear costmap service. This is an error if navigation is running!")
 
-                # Publish everything!
-                self.level_publisher.publish(self.get_single_message(utils.mapTopicFromLevelId(level.level_id),
-                                                                     OccupancyGrid))
-                self.level_metadata_publisher.publish(self.get_single_message(utils.metadataTopicFromLevelId(level.level_id),
-                                                                              MapMetaData))
+                self.maps[self.current_level].map.header.stamp = rospy.Time.now()
+
+                # Publish latched map messages
+                self.level_metadata_publisher.publish(self.maps[self.current_level].map.info)
+                self.level_publisher.publish(self.maps[self.current_level].map)
+
                 if req.publish_initial_pose:
                     self.initialpose_publisher.publish(req.initial_pose)
                 self.status_publisher.publish(level)
@@ -147,8 +145,8 @@ class LevelMultiplexer:
         return success, error_message
 
     def process_level_service(self, req):
-        level_service_proxy = rospy.ServiceProxy(utils.mapServiceFromLevelId(self.current_level), GetMap)
-        return level_service_proxy()
+        self.maps[self.current_level].map.header.stamp = rospy.Time.now()
+        return self.maps[self.current_level]
 
     def spin(self):
         br = tf.TransformBroadcaster()

@@ -3,8 +3,6 @@
 import rospy
 import rospkg
 
-import yaml, os
-
 from bwi_tools import loadMapFromFile
 from tf.transformations import quaternion_from_euler
 from tf import TransformBroadcaster
@@ -20,6 +18,13 @@ utils = multi_level_map_utils.utils
 class MapServer:
   def __init__(self):
     rospy.init_node('multi_level_map_server')
+
+    # Resolve the prefix of the map metadata topic.
+    multimap_topic_name = rospy.resolve_name("map_metadata")
+    if '/' in multimap_topic_name:
+        self.multimap_topic_prefix = multimap_topic_name[0:multimap_topic_name.rfind('/') + 1]
+    else:
+        self.multimap_topic_prefix = ""
 
     #get parameters
     self.global_frame_id = rospy.get_param('~global_frame_id', '/map')
@@ -83,14 +88,18 @@ class MapServer:
       self.map_response[map_name].map.header.stamp = rospy.Time.now()
 
       # Publish map service
-      self.service_server[map_name] = rospy.Service(utils.mapServiceFromLevelId(map_name), GetMap, self.levelCallback)
+      self.service_server[map_name] = rospy.Service(self.multimap_topic_prefix + utils.mapServiceFromLevelId(map_name),
+                                                    GetMap, 
+                                                    self.levelCallback)
 
       # Publish latched map messages
-      self.metadata_publisher[map_name] = rospy.Publisher(utils.metadataTopicFromLevelId(map_name), 
+      self.metadata_publisher[map_name] = rospy.Publisher(self.multimap_topic_prefix + utils.metadataTopicFromLevelId(map_name), 
                                                           MapMetaData,
                                                           latch=True)
       self.metadata_publisher[map_name].publish(self.map_response[map_name].map.info)
-      self.map_publisher[map_name] = rospy.Publisher(utils.mapTopicFromLevelId(map_name), OccupancyGrid, latch=True)
+      self.map_publisher[map_name] = rospy.Publisher(self.multimap_topic_prefix + utils.mapTopicFromLevelId(map_name),
+                                                     OccupancyGrid, 
+                                                     latch=True)
       self.map_publisher[map_name].publish(self.map_response[map_name].map)
 
       leveldata = LevelMetaData()
@@ -121,6 +130,7 @@ class MapServer:
     # publish MultiLevelMapData
     out_meta_data_msg.header.frame_id = self.global_frame_id
     out_meta_data_msg.header.stamp = rospy.Time.now()
+    # Note that this name should get resolved automatically, and we should not have to do anything.
     self.metadata_pub = rospy.Publisher("map_metadata", MultiLevelMapData, latch=True)
     self.metadata_pub.publish(out_meta_data_msg)
 
