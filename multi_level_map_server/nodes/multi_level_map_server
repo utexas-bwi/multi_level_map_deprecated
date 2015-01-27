@@ -38,7 +38,9 @@ class MapServer:
                 rospy.logfatal("Unable to resolved map file: " + map_file)
                 return
             map_data = yaml.load(open(resolved_map_file, "r"))
+            rospy.logwarn(str(map_data))
             self.map_list = map_data["maps"]
+            rospy.logwarn(str(self.map_list))
             if "links" in map_data:
                 self.map_links = map_data["links"]
             else:
@@ -72,48 +74,48 @@ class MapServer:
             else:
                 raise TypeError("Unable to parse origin tag")
 
-        data_directory = map_info['data_directory']
-        resolved_data_directory = resolveResource(data_directory)
-        if resolved_data_directory is None:
-            return
+            data_directory = map_info['data_directory']
+            resolved_data_directory = resolveResource(data_directory)
+            if resolved_data_directory is None:
+                return
 
-        yaml_file = map_info['yaml'];
-        resolved_yaml_file = resolveResource(yaml_file) 
-        if resolved_yaml_file is None:
-            return
+            yaml_file = map_info['yaml'];
+            resolved_yaml_file = resolveResource(yaml_file) 
+            if resolved_yaml_file is None:
+                return
 
-        yaml_file = resolved_yaml_file
+            yaml_file = resolved_yaml_file
 
-        self.map_response[map_name] = loadMapFromFile(yaml_file)
-        if self.map_response[map_name] is None:
-            rospy.logfatal("Unable to load yaml file for map: %s" %yaml_file)
-            return
+            self.map_response[map_name] = loadMapFromFile(yaml_file)
+            if self.map_response[map_name] is None:
+                rospy.logfatal("Unable to load yaml file for map: %s" %yaml_file)
+                return
 
-        self.map_response[map_name].map.info.map_load_time = rospy.Time.now()
-        self.map_response[map_name].map.header.frame_id = utils.frameIdFromLevelId(map_name)
-        self.map_response[map_name].map.header.stamp = rospy.Time.now()
+            self.map_response[map_name].map.info.map_load_time = rospy.Time.now()
+            self.map_response[map_name].map.header.frame_id = utils.frameIdFromLevelId(map_name)
+            self.map_response[map_name].map.header.stamp = rospy.Time.now()
 
-        # Publish map service
-        self.service_server[map_name] = rospy.Service(self.multimap_topic_prefix + utils.mapServiceFromLevelId(map_name),
-                                                      GetMap, 
-                                                      self.levelCallback)
+            # Publish map service
+            self.service_server[map_name] = rospy.Service(self.multimap_topic_prefix + utils.mapServiceFromLevelId(map_name),
+                                                          GetMap, 
+                                                          self.levelCallback)
 
-        # Publish latched map messages
-        self.metadata_publisher[map_name] = rospy.Publisher(self.multimap_topic_prefix + utils.metadataTopicFromLevelId(map_name), 
-                                                            MapMetaData,
-                                                            latch=True)
-        self.metadata_publisher[map_name].publish(self.map_response[map_name].map.info)
-        self.map_publisher[map_name] = rospy.Publisher(self.multimap_topic_prefix + utils.mapTopicFromLevelId(map_name),
-                                                       OccupancyGrid, 
-                                                       latch=True)
-        self.map_publisher[map_name].publish(self.map_response[map_name].map)
+            # Publish latched map messages
+            self.metadata_publisher[map_name] = rospy.Publisher(self.multimap_topic_prefix + utils.metadataTopicFromLevelId(map_name), 
+                                                                MapMetaData,
+                                                                latch=True)
+            self.metadata_publisher[map_name].publish(self.map_response[map_name].map.info)
+            self.map_publisher[map_name] = rospy.Publisher(self.multimap_topic_prefix + utils.mapTopicFromLevelId(map_name),
+                                                           OccupancyGrid, 
+                                                           latch=True)
+            self.map_publisher[map_name].publish(self.map_response[map_name].map)
 
-        leveldata = LevelMetaData()
-        leveldata.level_id = map_name
-        leveldata.data_directory = resolved_data_directory
-        leveldata.map_file = yaml_file
-        leveldata.info = self.map_response[map_name].map.info
-        out_meta_data_msg.levels.append(leveldata)
+            leveldata = LevelMetaData()
+            leveldata.level_id = map_name
+            leveldata.data_directory = resolved_data_directory
+            leveldata.map_file = yaml_file
+            leveldata.info = self.map_response[map_name].map.info
+            out_meta_data_msg.levels.append(leveldata)
 
         #process links
         for map_link in self.map_links:
