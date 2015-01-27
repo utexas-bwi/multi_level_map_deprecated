@@ -38,9 +38,7 @@ class MapServer:
                 rospy.logfatal("Unable to resolved map file: " + map_file)
                 return
             map_data = yaml.load(open(resolved_map_file, "r"))
-            rospy.logwarn(str(map_data))
             self.map_list = map_data["maps"]
-            rospy.logwarn(str(self.map_list))
             if "links" in map_data:
                 self.map_links = map_data["links"]
             else:
