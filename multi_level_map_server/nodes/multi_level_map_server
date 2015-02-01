@@ -108,7 +108,7 @@ class MapServer:
 
             leveldata = LevelMetaData()
             leveldata.level_id = map_name
-            leveldata.data_directory = resolved_data_directory
+            leveldata.data_directory = data_directory
             leveldata.map_file = yaml_file
             leveldata.info = self.map_response[map_name].map.info
             out_meta_data_msg.levels.append(leveldata)
