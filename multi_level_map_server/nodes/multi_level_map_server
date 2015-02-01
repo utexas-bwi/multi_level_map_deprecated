@@ -82,11 +82,9 @@ class MapServer:
             if resolved_yaml_file is None:
                 return
 
-            yaml_file = resolved_yaml_file
-
-            self.map_response[map_name] = loadMapFromFile(yaml_file)
+            self.map_response[map_name] = loadMapFromFile(resolved_yaml_file)
             if self.map_response[map_name] is None:
-                rospy.logfatal("Unable to load yaml file for map: %s" %yaml_file)
+                rospy.logfatal("Unable to load yaml file for map: %s" %resolved_yaml_file)
                 return
 
             self.map_response[map_name].map.info.map_load_time = rospy.Time.now()
