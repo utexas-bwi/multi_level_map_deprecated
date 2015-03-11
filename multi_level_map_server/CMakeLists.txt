@@ -4,7 +4,6 @@ project(multi_level_map_server)
 find_package(catkin REQUIRED)
 
 catkin_package(
-    DEPENDS python-imaging python-yaml
     CATKIN_DEPENDS
     nav_msgs
     multi_level_map_msgs
