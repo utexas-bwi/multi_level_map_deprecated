@@ -20,7 +20,7 @@
 
   <export>
     <metapackage/>
-    <architecture-independent/>
+    <architecture_independent/>
   </export>
 
 </package>

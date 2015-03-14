@@ -24,7 +24,7 @@
   <run_depend>nav_msgs</run_depend>
 
   <export>
-    <architecture-independent/>
+    <architecture_independent/>
   </export>
 
 </package>
