@@ -1,6 +1,6 @@
 <package>
   <name>multi_level_map</name>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <description> Metapackage which pulls in all the other packages required to run a multi level map server and perform multi level map manipulations.</description>
   <license>BSD</license>
 

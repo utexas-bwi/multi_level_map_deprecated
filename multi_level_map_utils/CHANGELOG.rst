@@ -2,8 +2,8 @@
 Changelog for package multi_level_map_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.1 (2015-03-24)
+------------------
 * removed unnecessary script installation which installs in global bin instead of package bin. closes `#4 <https://github.com/utexas-bwi/multi_level_map/issues/4>`_.
 * Contributors: Piyush Khandelwal
 
