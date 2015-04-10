@@ -45,6 +45,7 @@ class LevelSelectorPlugin(Plugin):
 
         # Create a service proxy to change the current level.
         self.level_selector_proxy = rospy.ServiceProxy("level_mux/change_current_level", ChangeCurrentLevel)
+        self.level_selector_proxy.wait_for_service()
 
     def process_multimap(self, msg):
         self.levels = msg.levels
