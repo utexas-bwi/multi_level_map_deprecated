@@ -18,6 +18,7 @@ class LevelMultiplexer:
         rospy.init_node("map_mux")
 
         self.global_frame_id = rospy.get_param('~global_frame_id', 'level_mux/map')
+        self.default_current_level = rospy.get_param('~default_current_level', None)
 
         # Subcribe to the multi level map data to get information about all the maps.
         self.multimap_subscriber = rospy.Subscriber("map_metadata", MultiLevelMapData, self.process_multimap)
@@ -95,6 +96,21 @@ class LevelMultiplexer:
                     self.initialpose_publisher.unregister()
                     self.initialpose_publisher = None
                 self.current_level = None
+
+        # Perform some sanity checks on the current_level
+        if self.default_current_level is not None and self.current_level is None:
+            default_level_found = False
+            for level in self.levels:
+                if self.default_current_level == level.level_id:
+                    default_level_found = True
+                    break
+            if default_level_found:
+                req = ChangeCurrentLevelRequest()
+                req.new_level_id = self.default_current_level
+                req.publish_initial_pose = False
+                self.change_level(req)
+            else:
+                rospy.logwarn("Default level requested as " + self.default_current_level + ", but unavailable in multimap.")
 
     def change_level(self, req):
         success = True
