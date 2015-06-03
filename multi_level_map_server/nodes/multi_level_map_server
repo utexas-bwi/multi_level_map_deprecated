@@ -99,11 +99,11 @@ class MapServer:
             # Publish latched map messages
             self.metadata_publisher[map_name] = rospy.Publisher(self.multimap_topic_prefix + utils.metadataTopicFromLevelId(map_name), 
                                                                 MapMetaData,
-                                                                latch=True)
+                                                                latch=True, queue_size=1)
             self.metadata_publisher[map_name].publish(self.map_response[map_name].map.info)
             self.map_publisher[map_name] = rospy.Publisher(self.multimap_topic_prefix + utils.mapTopicFromLevelId(map_name),
                                                            OccupancyGrid, 
-                                                           latch=True)
+                                                           latch=True, queue_size=1)
             self.map_publisher[map_name].publish(self.map_response[map_name].map)
 
             leveldata = LevelMetaData()
@@ -135,7 +135,7 @@ class MapServer:
         out_meta_data_msg.header.frame_id = self.global_frame_id
         out_meta_data_msg.header.stamp = rospy.Time.now()
         # Note that this name should get resolved automatically, and we should not have to do anything.
-        self.metadata_pub = rospy.Publisher("map_metadata", MultiLevelMapData, latch=True)
+        self.metadata_pub = rospy.Publisher("map_metadata", MultiLevelMapData, latch=True, queue_size=1)
         self.metadata_pub.publish(out_meta_data_msg)
 
         # publish tf tree from global frame of reference

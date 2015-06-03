@@ -31,7 +31,7 @@ class LevelMultiplexer:
 
         # We also need to publish information about the current level.
         self.current_level = None
-        self.status_publisher = rospy.Publisher("~current_level", LevelMetaData, latch=True)
+        self.status_publisher = rospy.Publisher("~current_level", LevelMetaData, latch=True, queue_size=1)
 
         # Based on the current level id, publish map, static_map, map_metadata and initial_pose (i.e. the mux output).
         self.level_publisher = None
@@ -127,13 +127,13 @@ class LevelMultiplexer:
 
                 # Initialize the mux output channels if they have not been initialized.
                 if self.level_publisher is None:
-                    self.level_publisher = rospy.Publisher("~map", OccupancyGrid, latch=True)
-                    self.level_metadata_publisher = rospy.Publisher("~map_metadata", MapMetaData, latch=True)
+                    self.level_publisher = rospy.Publisher("~map", OccupancyGrid, latch=True, queue_size=1)
+                    self.level_metadata_publisher = rospy.Publisher("~map_metadata", MapMetaData, latch=True, queue_size=1)
                     self.level_map_service = rospy.Service('~static_map', GetMap, self.process_level_service)
                     # Note that initialpose is not latched, as the publication is only valid when the 
                     # change_current_level service is called. Soon after, the robot may have moved, and this estimate
                     # is incorrect.
-                    self.initialpose_publisher = rospy.Publisher("initialpose", PoseWithCovarianceStamped) 
+                    self.initialpose_publisher = rospy.Publisher("initialpose", PoseWithCovarianceStamped, queue_size=1) 
                     try:
                         clear_costmap_service = rospy.ServiceProxy('move_base/clear_costmaps', Empty)
                         # Clear all ze costmaps.
