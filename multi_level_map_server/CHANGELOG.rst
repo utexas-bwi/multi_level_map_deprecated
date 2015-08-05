@@ -2,6 +2,11 @@
 Changelog for package multi_level_map_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* set queue_size for rospy Publishers (`#7 <https://github.com/utexas-bwi/multi_level_map/issues/7>`_)
+* Contributors: Jack O'Quin
+
 0.1.1 (2015-03-24)
 ------------------
 

@@ -2,6 +2,13 @@
 Changelog for package multi_level_map_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* set queue_size for rospy Publishers (`#7 <https://github.com/utexas-bwi/multi_level_map/issues/7>`_)
+* added a parameter for setting the default level. closes `#6 <https://github.com/utexas-bwi/multi_level_map/issues/6>`_.
+* level_selector now waits for change_level service to be available before using it. closes `#5 <https://github.com/utexas-bwi/multi_level_map/issues/5>`_
+* Contributors: Jack O'Quin, Piyush Khandelwal
+
 0.1.1 (2015-03-24)
 ------------------
 * removed unnecessary script installation which installs in global bin instead of package bin. closes `#4 <https://github.com/utexas-bwi/multi_level_map/issues/4>`_.
