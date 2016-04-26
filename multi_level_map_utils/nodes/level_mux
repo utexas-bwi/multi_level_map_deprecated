@@ -6,7 +6,7 @@ from multi_level_map_msgs.msg import LevelMetaData, MultiLevelMapData
 from multi_level_map_msgs.srv import ChangeCurrentLevel, ChangeCurrentLevelRequest
 import multi_level_map_utils.utils as utils
 from nav_msgs.msg import MapMetaData, OccupancyGrid
-from nav_msgs.srv import GetMap
+from nav_msgs.srv import GetMap, SetMap
 import rospy
 from std_srvs.srv import Empty
 import tf
@@ -134,9 +134,10 @@ class LevelMultiplexer:
                     # change_current_level service is called. Soon after, the robot may have moved, and this estimate
                     # is incorrect.
                     self.initialpose_publisher = rospy.Publisher("initialpose", PoseWithCovarianceStamped, queue_size=1) 
+                    self.set_map = rospy.ServiceProxy("set_map", SetMap)
                     try:
                         clear_costmap_service = rospy.ServiceProxy('move_base/clear_costmaps', Empty)
-                        # Clear all ze costmaps.
+                        # Clear all costmaps.
                         clear_costmap_service()
                     except rospy.ROSInterruptException:
                         # shutting down.
@@ -152,7 +153,13 @@ class LevelMultiplexer:
                 self.level_publisher.publish(self.maps[self.current_level].map)
 
                 if req.publish_initial_pose:
-                    self.initialpose_publisher.publish(req.initial_pose)
+                    try: 
+                        self.set_map(self.maps[self.current_level].map, req.initial_pose)
+                    except rospy.ServiceException:
+                        # Service does not exist, level_mux being used without move_base OR a configuration snafu
+                        rospy.logwarn("MultiLevelMap - Multiplexer::changeLevel: " + 
+                                      "Couldn't set initial pose via service call. Trying unlatched publication.")
+                        self.initialpose_publisher.publish(req.initial_pose)
                 self.status_publisher.publish(level)
 
                 level_found = True
